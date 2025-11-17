@@ -1,2 +1,2 @@
-pynput>=1.7.6
+inputs>=0.5
 
