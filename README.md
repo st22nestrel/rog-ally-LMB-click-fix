@@ -1,107 +1,69 @@
-# ROG Ally RT Button Click Converter
+# ROG Ally RT Button to LMB click converter
 
-This Python script fixes the issue where the ROG Ally's RT button (configured to emulate left mouse click) doesn't work when keyboard keys are held down.
+Fixes the issue where the ROG Ally's RT button (configured to emulate left mouse click) doesn't work when keyboard keys are held down. This program detects RT button presses at the hardware level and converts them to literal mouse clicks using the Windows API.
 
-## The Problem
+## 🚀 How to use
 
-When you configure your ROG Ally's RT button to emulate a left mouse click, it works fine normally. However, when you hold down any keyboard key, the emulated click stops working. This is because Windows treats the emulated input differently from real mouse clicks when keyboard keys are pressed.
+You can download precompiled build from this repo for convenience ([link to releases](https://github.com/st22nestrel/rog-ally-LMB-click-fix/releases)).
+Otherwise you can build it yourself or run python version. It is up to you which option is more versatile, as they are similar in resource consumption.
 
-## The Solution
+### 🐍 XInput Python Version
+- double click `run_python.bat`.
+- or from command line
+    ```bash
+    python click_converter_xinput/click_converter.py
+    ```
+- Note: You need to have python installed
 
-This script detects when you press the RT button on your ROG Ally gamepad at the hardware level and converts it to a literal left mouse click using the Windows API. This bypasses the emulation layer entirely.
+### ⚡ C++ Version
+- Build with auto-detected compiler
+    ```bash
+    build_and_run.bat
+    ```
 
-## Installation
+## ⚙️ Customization
 
-### Quick Start
-1. Double-click `setup_and_run.bat` - it will install dependencies and run the script automatically.
+**Polling rate** - this variable affects CPU usage and response time. Adjust it if you feel that the script is missing some clicks.
 
-### Manual Installation
-1. Install Python 3.7+ from https://www.python.org/
-2. Install required packages:
-   ```bash
-   pip install -r requirements.txt
-   ```
+Examples:
+- `8ms` → ~120Hz, ~<2% CPU (default, very responsive)
+- `16ms` → ~60Hz, ~<1% CPU (more efficient)
+- `4ms` → ~250Hz,  ~3% CPU (ultra responsive)
 
-## Usage
-
-### Step 1: Find Your RT Button Code (Optional)
-
-If the main script doesn't detect your RT button, run the debug script first:
-
-```bash
-python debug_gamepad.py
+### 🐍 XInput Python Version
+Edit these constants in [click_converter.py)](click_converter_xinput/click_converter.py):
+```python
+RT_THRESHOLD = 30           # Trigger sensitivity (0-255)
+POLL_INTERVAL_MS = 8        # Polling rate in milliseconds
 ```
 
-Press your RT button and note the **Code** value (e.g., `ABS_RZ`, `BTN_TR2`, `ABS_Z`, etc.)
-
-### Step 2: Run the Main Script
-
-```bash
-python click_converter.py
+### ⚡ C++ Version
+Edit these constants in [click_converter.cpp)](click_converter_cpp/click_converter.cpp)``:
+```cpp
+const BYTE RT_THRESHOLD = 30;      // Trigger sensitivity (0-255)
+const int POLL_INTERVAL_MS = 8;    // Polling rate in milliseconds
 ```
 
-Or simply double-click `setup_and_run.bat`
+After editing, rebuild with `build_and_run.bat` or the appropriate build script.
 
-### Step 3: Test It
+---
 
-1. Keep the script running in the background
-2. Hold down any keyboard key (e.g., Shift, Ctrl, or any letter)
-3. Press the RT button on your ROG Ally
-4. The click should now work!
+## 🔧 Inputs Python Version
 
-## Troubleshooting
+This version is a little less resource efficient. It should work on linux. It is left here for you to try and experiment with if you have problems with other versions.
 
-### RT Button Not Detected
+---
 
-If the script doesn't respond to your RT button:
+## 💡 Howto and tips
 
-1. Run `debug_gamepad.py` to find your button's event code
-2. Open `click_converter.py` in a text editor
-3. Find line 90: `if event.code in ['ABS_RZ', 'BTN_TR2', 'ABS_Z', 'BTN_TR']:`
-4. Add your button's code to the list
-5. Save and run the script again
+See [HOWTO.md](docs/HOWTO.md). Those are tips from Claude and might not be truthful.
 
-### Gamepad Not Detected
+## 🙏 Acknowledgements
 
-- Make sure your ROG Ally is in gamepad mode
-- Try disconnecting and reconnecting the controller
-- Check Windows Device Manager to ensure the gamepad is recognized
+Values reported for CPU usage are from ROG ALLY Z1e and might differ for other processors.
 
-### Script Exits Immediately
+Scripts were coded with help of AI (Claude Sonnet 4.5).
 
-- Make sure you installed the `inputs` package: `pip install inputs`
-- Try running from command prompt to see error messages
+## 📝 License
 
-## How It Works
-
-1. **Gamepad Detection**: Uses the `inputs` library to detect gamepad events at the hardware level
-2. **RT Button Monitoring**: Watches for RT button press/release events
-3. **Mouse Click Injection**: Uses Windows API (`user32.dll`) to send literal mouse down/up events
-4. **State Tracking**: Maintains button state to properly handle press and release
-
-## Files
-
-- `click_converter.py` - Main script that converts RT button to mouse clicks
-- `debug_gamepad.py` - Debug tool to identify button codes
-- `requirements.txt` - Python package dependencies
-- `setup_and_run.bat` - Automated setup and run script
-- `README.md` - This file
-
-## Technical Details
-
-The script uses:
-- **inputs library**: Cross-platform gamepad input library
-- **Windows API (user32.dll)**: For sending hardware-level mouse events
-- **Threading**: For thread-safe state management
-
-## Notes
-
-- The script must remain running in the background for the fix to work
-- You can minimize the console window while it runs
-- Press Ctrl+C in the console to stop the script
-- The script will automatically reconnect if the gamepad is disconnected
-
-## License
-
-Free to use and modify as needed.
-
+Licensed under MIT license.
